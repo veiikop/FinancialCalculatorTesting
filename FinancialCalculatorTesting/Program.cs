@@ -1,11 +1,13 @@
-﻿using System;
+﻿using FinancialCalculatorTesting.Services;
+using System;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 
 namespace FinancialCalculator
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             while (true)
@@ -36,7 +38,7 @@ namespace FinancialCalculator
             }
         }
 
-        static void ShowMainMenu()
+        public static void ShowMainMenu()
         {
             Console.Clear();
             Console.WriteLine("=== ФИНАНСОВЫЙ КАЛЬКУЛЯТОР ===");
@@ -48,7 +50,7 @@ namespace FinancialCalculator
         }
 
         #region === 1. Кредитный калькулятор ===
-        static void CreditCalculator()
+        public static void CreditCalculator()
         {
             Console.Clear();
             Console.WriteLine("=== РАСЧЕТ КРЕДИТА ===");
@@ -72,7 +74,7 @@ namespace FinancialCalculator
         #endregion
 
         #region === 2. Конвертер валют ===
-        static void CurrencyConverter()
+        public static void CurrencyConverter()
         {
             Console.Clear();
             Console.WriteLine("=== КОНВЕРТЕР ВАЛЮТ ===");
@@ -89,38 +91,16 @@ namespace FinancialCalculator
             Console.WriteLine($"\nРезультат: {amount:F2} {from} → {result:F2} {to}");
         }
 
-        static decimal ConvertCurrency(decimal amount, string from, string to)
+        private static readonly ICurrencyConverterService _converter = new CurrencyConverterService();
+
+        public static decimal ConvertCurrency(decimal amount, string from, string to)
         {
-            // Курсы относительно RUB
-            const decimal usdToRub = 90.0m;
-            const decimal eurToRub = 98.5m;
-
-            decimal inRub;
-
-            // Конвертация "от" → в RUB
-            if (from == "RUB")
-                inRub = amount;
-            else if (from == "USD")
-                inRub = amount * usdToRub;
-            else if (from == "EUR")
-                inRub = amount * eurToRub;
-            else
-                throw new InvalidOperationException("Неподдерживаемая исходная валюта: " + from);
-
-            // Конвертация из RUB → "в"
-            if (to == "RUB")
-                return inRub;
-            else if (to == "USD")
-                return inRub / usdToRub;
-            else if (to == "EUR")
-                return inRub / eurToRub;
-            else
-                throw new InvalidOperationException("Неподдерживаемая целевая валюта: " + to);
+            return _converter.Convert(amount, from, to);
         }
         #endregion
 
         #region === 3. Калькулятор вкладов ===
-        static void DepositCalculator()
+        public static void DepositCalculator()
         {
             Console.Clear();
             Console.WriteLine("=== КАЛЬКУЛЯТОР ВКЛАДОВ ===");
@@ -154,7 +134,7 @@ namespace FinancialCalculator
         #endregion
 
         #region === Вспомогательные методы валидации ===
-        static decimal ReadDecimal(string prompt, decimal min, decimal max)
+        public static decimal ReadDecimal(string prompt, decimal min, decimal max)
         {
             while (true)
             {
@@ -181,7 +161,7 @@ namespace FinancialCalculator
             }
         }
 
-        static int ReadInt(string prompt, int min, int max)
+        public static int ReadInt(string prompt, int min, int max)
         {
             while (true)
             {
@@ -208,7 +188,7 @@ namespace FinancialCalculator
             }
         }
 
-        static string ReadCurrency(string prompt)
+        public static string ReadCurrency(string prompt)
         {
             string[] valid = { "RUB", "USD", "EUR" };
             while (true)
